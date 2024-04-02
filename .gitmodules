@@ -1,0 +1,39 @@
+[submodule "esp-idf"]
+	path = esp-idf
+	url = git@github.com:CommanderRedYT/esp-idf.git
+[submodule "components/cpputils"]
+	path = components/cpputils
+	url = git@github.com:CommanderRedYT/cpputils.git
+[submodule "components/arduino-esp32"]
+	path = components/arduino-esp32
+	url = git@github.com:CommanderRedYT/arduino-esp32.git
+[submodule "components/fmt"]
+	path = components/fmt
+	url = git@github.com:CommanderRedYT/fmt.git
+[submodule "components/espconfiglib"]
+	path = components/espconfiglib
+	url = git@github.com:CommanderRedYT/espconfiglib.git
+[submodule "esp-protocols"]
+	path = esp-protocols
+	url = git@github.com:CommanderRedYT/esp-protocols.git
+[submodule "components/date"]
+	path = components/date
+	url = git@github.com:CommanderRedYT/date.git
+[submodule "components/espcpputils"]
+	path = components/espcpputils
+	url = git@github.com:CommanderRedYT/espcpputils.git
+[submodule "components/espchrono"]
+	path = components/espchrono
+	url = git@github.com:CommanderRedYT/espchrono.git
+[submodule "components/ArduinoJson"]
+	path = components/ArduinoJson
+	url = git@github.com:CommanderRedYT/ArduinoJson.git
+[submodule "components/esphttpdutils"]
+	path = components/esphttpdutils
+	url = git@github.com:CommanderRedYT/esphttpdutils.git
+[submodule "components/espwifistack"]
+	path = components/espwifistack
+	url = git@github.com:CommanderRedYT/espwifistack.git
+[submodule "components/cxx-ring-buffer"]
+	path = components/cxx-ring-buffer
+	url = git@github.com:CommanderRedYT/cxx-ring-buffer.git

@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+
+env:
+  FIRMWARE_BASE: repository # use something like repository/firmware in case this is a repo with other things like hardware
+
+jobs:
+  checkout:
+    runs-on: ubuntu-latest
+    name: Checkout
+    steps:
+      - name: Cache repository
+        uses: actions/cache@v4
+        id: cache-repository
+        with:
+          path: repository
+          key: ${{ runner.os }}-repository-${{ github.sha }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: repository
+          submodules: recursive
+
+  install-idf:
+    runs-on: ubuntu-latest
+    name: Install esp-idf
+    needs:
+      - checkout
+    steps:
+      - name: Cache repository
+        uses: actions/cache@v4
+        id: cache-repository
+        with:
+          path: repository
+          key: ${{ runner.os }}-repository-${{ github.sha }}
+
+      - name: Verify that "Cache repostory" had a hit
+        if: ${{ steps.cache-repository.outputs.cache-hit != 'true' }}
+        run: exit 1
+
+      - name: Get esp-idf release name
+        id: get-esp-idf-release
+        run: echo "tag_name=$(git -C $FIRMWARE_BASE/esp-idf describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Cache .espressif
+        id: cache-espressif
+        uses: actions/cache@v4
+        with:
+          path: ~/.espressif
+          key: ${{ runner.os }}-espressif-${{ steps.get-esp-idf-release.outputs.tag_name }}
+
+      - name: Install .espressif dependencies
+        if: ${{ steps.cache-espressif.outputs.cache-hit != 'true' }}
+        run: $FIRMWARE_BASE/esp-idf/install.sh
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [default]
+    name: ${{ matrix.node }}
+    needs:
+      - checkout
+      - install-idf
+    steps:
+      - name: Cache repository
+        uses: actions/cache@v4
+        id: cache-repository
+        with:
+          path: repository
+          key: ${{ runner.os }}-repository-${{ github.sha }}
+
+      - name: Verify that "Cache repostory" had a hit
+        if: ${{ steps.cache-repository.outputs.cache-hit != 'true' }}
+        run: exit 1
+
+      - name: Get esp-idf release name
+        id: get-esp-idf-release
+        run: echo "tag_name=$(git -C $FIRMWARE_BASE/esp-idf describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Cache .espressif
+        id: cache-espressif
+        uses: actions/cache@v4
+        with:
+          path: ~/.espressif
+          key: ${{ runner.os }}-espressif-${{ steps.get-esp-idf-release.outputs.tag_name }}
+
+      - name: Verify that "Cache .espressif" had a hit
+        if: ${{ steps.cache-espressif.outputs.cache-hit != 'true' }}
+        run: |
+          echo "Cache .espressif did not hit? Did the prepare step run successfully?"
+          exit 1
+
+      - name: Build firmware
+        run: |
+          cd $FIRMWARE_BASE
+          ./esp-idf/install.sh
+          . export.sh
+          ./switchconf.sh ${{ matrix.node }}
+          idf.py build

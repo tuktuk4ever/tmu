@@ -1,0 +1,12 @@
+build
+build_*
+CMakeLists.txt.user*
+cmake-build-debug
+config.cmake
+sdkconfig
+sdkconfig.old*
+.ccache
+.vscode
+managed_components
+.idea
+build.bak
