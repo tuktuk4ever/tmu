@@ -20,6 +20,8 @@ set(dependencies
         mdns
         mqtt
         esp_app_format
+        vesc-uart-idf
+        esp-gui-lib
 )
 
 idf_component_register(

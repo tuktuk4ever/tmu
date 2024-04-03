@@ -1,1 +1,1 @@
-set(APP_NAME esp-idf-base)
+set(APP_NAME esp-vesc-display)
