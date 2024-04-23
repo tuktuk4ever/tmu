@@ -7,29 +7,56 @@ constexpr const char * const TAG = "display";
 
 // 3rdparty lib includes
 #include <screenmanager.h>
-#include <tftinterface.h>
 #include <tftcolors.h>
 #include <TFT_eSPI.h>
-#include <color_utils.h>
 
 // local includes
-#include "screens/mainscreen.h"
+#include "utils/settings.h"
 
-namespace espvesc {
+namespace espvesc::display {
+
+espgui::Label bootLabel{16, 16};
 
 TFT_eSPI tft;
 
-void display_init()
+void set_boot_msg(std::string_view msg)
 {
-    tft.init();
-    tft.setRotation(1);
-    tft.fillScreen(TFT_WHITE);
-
-    espgui::switchScreen<MainScreen>();
+    bootLabel.redraw(tft, msg, espgui::TFT_WHITE, espgui::TFT_BLACK, 4);
 }
 
-void display_update()
+void init()
 {
+    tft.init();
+    tft.setRotation(configs.displayRotated.value() ? 1 : 3);
+    tft.fillScreen(TFT_WHITE);
+
+    bootLabel.start(tft);
+}
+
+void tft_init_with_screen()
+{
+    if (espgui::currentDisplay)
+        espgui::currentDisplay->initScreen(tft);
+    else
+        ESP_LOGW(TAG, "no current display to init");
+}
+
+void go_back()
+{
+    if (espgui::currentDisplay && espgui::displayStack.size() > 1)
+        espgui::popScreen();
+}
+
+void update()
+{
+    if (tft.getRotation() != (configs.displayRotated.value() ? 1 : 3))
+    {
+        tft.setRotation(configs.displayRotated.value() ? 1 : 3);
+
+        if (espgui::currentDisplay)
+            espgui::currentDisplay->initScreen(tft);
+    }
+
     if (espgui::currentDisplay)
         espgui::currentDisplay->update();
     else
@@ -42,7 +69,7 @@ void display_update()
     }
 }
 
-void display_redraw()
+void redraw()
 {
     if (espgui::currentDisplay)
         espgui::currentDisplay->redraw(tft);
@@ -50,4 +77,4 @@ void display_redraw()
         ESP_LOGW(TAG, "no current display to redraw");
 }
 
-} // namespace espvesc
+} // namespace espvesc::display

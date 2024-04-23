@@ -1,0 +1,221 @@
+menu "tuktuk management unit"
+
+choice TUKTUK_BUTTON_TYPE
+    prompt "Tuktuk Button Type"
+    default TUKTUK_BUTTON_TYPE_NONE
+    help
+      Select the type of button that is connected to the tuktuk management unit.
+    config TUKTUK_BUTTON_TYPE_NONE
+        bool "None"
+
+    config TUKTUK_BUTTON_TYPE_BASIC
+        bool "Basic"
+
+    config TUKTUK_BUTTON_TYPE_DIODE
+        bool "Diode"
+
+endchoice
+
+choice TUKTUK_BUTTON_TYPE_BASIC_INPUT_MODE
+    depends on TUKTUK_BUTTON_TYPE_BASIC
+    prompt "Tuktuk Direct Button Input Pull-Mode"
+    default TUKTUK_BUTTON_TYPE_BASIC_INPUT_MODE_NONE
+    help
+      Select the input mode of the direct button.
+
+    config TUKTUK_BUTTON_TYPE_BASIC_INPUT_MODE_NONE
+        bool "None"
+
+    config TUKTUK_BUTTON_TYPE_BASIC_INPUT_MODE_PULLUP
+        bool "Pullup"
+
+    config TUKTUK_BUTTON_TYPE_BASIC_INPUT_MODE_PULLDOWN
+        bool "Pulldown"
+
+endchoice
+
+choice TUKTUK_BUTTON_TYPE_BASIC_INPUT_LEVEL_WHEN_PRESSED
+    depends on TUKTUK_BUTTON_TYPE_BASIC
+    prompt "Tuktuk Direct Button Input Level When Pressed"
+
+    default TUKTUK_BUTTON_TYPE_BASIC_INPUT_LEVEL_WHEN_PRESSED_HIGH
+    default TUKTUK_BUTTON_TYPE_BASIC_INPUT_LEVEL_WHEN_PRESSED_HIGH if TUKTUK_BUTTON_TYPE_BASIC_INPUT_MODE_PULLUP
+    default TUKTUK_BUTTON_TYPE_BASIC_INPUT_LEVEL_WHEN_PRESSED_LOW if TUKTUK_BUTTON_TYPE_BASIC_INPUT_MODE_PULLDOWN
+
+    help
+      Select the level of the direct button when it is pressed.
+
+    config TUKTUK_BUTTON_TYPE_BASIC_INPUT_LEVEL_WHEN_PRESSED_HIGH
+        bool "High"
+
+    config TUKTUK_BUTTON_TYPE_BASIC_INPUT_LEVEL_WHEN_PRESSED_LOW
+        bool "Low"
+
+endchoice
+
+config TUKTUK_IN_PINS_COUNT
+    int "Number of input pins"
+    default -1
+    range 1 8
+    depends on TUKTUK_BUTTON_TYPE_DIODE
+    help
+      Number of input pins connected to the tuktuk management unit.
+
+config TUKTUK_OUT_PINS_COUNT
+    int "Number of output pins"
+    default -1
+    range 1 8
+    depends on TUKTUK_BUTTON_TYPE_DIODE
+    help
+      Number of output pins connected to the tuktuk management unit.
+
+menu "Direct button input pins configuration"
+    depends on TUKTUK_BUTTON_TYPE_BASIC
+
+    config TUKTUK_BASIC_PIN_1
+        int "Input pin 1"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+
+    config TUKTUK_BASIC_PIN_2
+        int "Input pin 2"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+
+    config TUKTUK_BASIC_PIN_3
+        int "Input pin 3"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+
+    config TUKTUK_BASIC_PIN_4
+        int "Input pin 4"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+
+endmenu
+
+menu "Diode button input pins configuration"
+    depends on TUKTUK_BUTTON_TYPE_DIODE && TUKTUK_IN_PINS_COUNT > 0
+
+    config TUKTUK_IN_PIN_1
+        int "Input pin 1"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+
+    config TUKTUK_IN_PIN_2
+        int "Input pin 2"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_IN_PINS_COUNT > 1
+
+    config TUKTUK_IN_PIN_3
+        int "Input pin 3"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_IN_PINS_COUNT > 2
+
+    config TUKTUK_IN_PIN_4
+        int "Input pin 4"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_IN_PINS_COUNT > 3
+
+    config TUKTUK_IN_PIN_5
+        int "Input pin 5"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_IN_PINS_COUNT > 4
+
+    config TUKTUK_IN_PIN_6
+        int "Input pin 6"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_IN_PINS_COUNT > 5
+
+    config TUKTUK_IN_PIN_7
+        int "Input pin 7"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_IN_PINS_COUNT > 6
+
+    config TUKTUK_IN_PIN_8
+        int "Input pin 8"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_IN_PINS_COUNT > 7
+
+endmenu
+
+menu "Diode button output pins configuration"
+    depends on TUKTUK_BUTTON_TYPE_DIODE && TUKTUK_OUT_PINS_COUNT > 0
+
+    config TUKTUK_OUT_PIN_1
+        int "Output pin 1"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+
+    config TUKTUK_OUT_PIN_2
+        int "Output pin 2"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_OUT_PINS_COUNT > 1
+
+    config TUKTUK_OUT_PIN_3
+        int "Output pin 3"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_OUT_PINS_COUNT > 2
+
+    config TUKTUK_OUT_PIN_4
+        int "Output pin 4"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_OUT_PINS_COUNT > 3
+
+    config TUKTUK_OUT_PIN_5
+        int "Output pin 5"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_OUT_PINS_COUNT > 4
+
+    config TUKTUK_OUT_PIN_6
+        int "Output pin 6"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_OUT_PINS_COUNT > 5
+
+    config TUKTUK_OUT_PIN_7
+        int "Output pin 7"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_OUT_PINS_COUNT > 6
+
+    config TUKTUK_OUT_PIN_8
+        int "Output pin 8"
+        default -1
+        range -1 32 if IDF_TARGET_ESP32
+        range -1 45 if IDF_TARGET_ESP32S2
+        depends on TUKTUK_OUT_PINS_COUNT > 7
+
+endmenu
+
+endmenu

@@ -61,7 +61,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [default]
+        node: [default, diodes]
     name: ${{ matrix.node }}
     needs:
       - checkout
