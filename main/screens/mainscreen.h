@@ -7,13 +7,11 @@ namespace espvesc {
 
 class MainScreen : public VescMenuDisplay
 {
-    using Base = espgui::MenuDisplay;
+    using Base = VescMenuDisplay;
 public:
     MainScreen();
 
     std::string title() const override;
-
-    void back() override;
 };
 
 } // namespace espvesc

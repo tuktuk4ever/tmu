@@ -27,16 +27,21 @@ MainScreen::MainScreen()
     using namespace espgui;
 
     constructMenuItem<makeComponent<MenuItem, VoltageText, DummyAction>>();
+    constructMenuItem<makeComponent<MenuItem, VoltageText, DummyAction>>();
+    constructMenuItem<makeComponent<MenuItem, VoltageText, DummyAction>>();
+    constructMenuItem<makeComponent<MenuItem, VoltageText, DummyAction>>();
+    constructMenuItem<makeComponent<MenuItem, VoltageText, DummyAction>>();
+    constructMenuItem<makeComponent<MenuItem, VoltageText, DummyAction>>();
+    constructMenuItem<makeComponent<MenuItem, VoltageText, DummyAction>>();
+    constructMenuItem<makeComponent<MenuItem, VoltageText, DummyAction>>();
+    constructMenuItem<makeComponent<MenuItem, VoltageText, DummyAction>>();
+    constructMenuItem<makeComponent<MenuItem, VoltageText, DummyAction>>();
+    constructMenuItem<makeComponent<MenuItem, VoltageText, DummyAction>>();
 }
 
 std::string MainScreen::title() const
 {
     return "Main Screen";
-}
-
-void MainScreen::back()
-{
-    espgui::popScreen();
 }
 
 } // namespace espvesc

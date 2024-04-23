@@ -1,11 +1,22 @@
 #pragma once
 
-namespace espvesc {
+// 3rdparty lib includes
+#include <widgets/label.h>
 
-void display_init();
+namespace espvesc::display {
 
-void display_update();
+extern espgui::Label bootLabel;
 
-void display_redraw();
+void set_boot_msg(std::string_view msg);
 
-} // namespace espvesc
+void tft_init_with_screen();
+
+void go_back();
+
+void init();
+
+void update();
+
+void redraw();
+
+} // namespace espvesc::display

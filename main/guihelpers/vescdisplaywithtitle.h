@@ -1,19 +1,17 @@
 #pragma once
 
 // 3rdparty lib includes
-#include <menudisplay.h>
+#include <displaywithtitle.h>
 
 namespace espvesc {
 
-class VescMenuDisplay : public espgui::MenuDisplay
+class VescDisplayWithTitle : public espgui::DisplayWithTitle
 {
-    using Base = espgui::MenuDisplay;
+    using Base = espgui::DisplayWithTitle;
 
 public:
     void rawButtonPressed(uint8_t button) override;
     void rawButtonReleased(uint8_t button) override;
-
-    void back() override;
 };
 
 } // namespace espvesc

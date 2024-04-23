@@ -1,18 +1,18 @@
-#include "vescdisplay.h"
+#include "vescdisplaywithtitle.h"
 
 // local includes
 #include "control/buttons.h"
 
 namespace espvesc {
 
-void VescDisplay::rawButtonPressed(uint8_t button)
+void VescDisplayWithTitle::rawButtonPressed(uint8_t button)
 {
     //Base::rawButtonPressed(button);
     if (const auto translated = translateRawButton(button))
         buttonPressed(*translated);
 }
 
-void VescDisplay::rawButtonReleased(uint8_t button)
+void VescDisplayWithTitle::rawButtonReleased(uint8_t button)
 {
     //Base::rawButtonReleased(button);
     if (const auto translated = translateRawButton(button))
