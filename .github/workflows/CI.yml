@@ -2,6 +2,10 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
+    tags:
+      - '*'
 
 env:
   FIRMWARE_BASE: repository # use something like repository/firmware in case this is a repo with other things like hardware
@@ -102,3 +106,45 @@ jobs:
           . export.sh
           ./switchconf.sh ${{ matrix.node }}
           idf.py build
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: firmware-${{ matrix.node }}
+          path: $FIRMWARE_BASE/build/*.bin
+
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create release
+    needs:
+      - build
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download firmware binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: firmware-*
+          path: ${{ github.workspace }}/firmware
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            Firmware binaries for ${{ github.ref }}
+          draft: true
+          prerelease: false
+
+      - name: Upload firmware binaries
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/firmware/*.bin
+          asset_name: ${{ github.ref }}.bin
+          asset_content_type: application/octet-stream
