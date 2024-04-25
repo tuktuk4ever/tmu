@@ -2,8 +2,8 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    # branches:
+    #   - main
     tags:
       - '*'
 
@@ -21,6 +21,8 @@ jobs:
         with:
           path: repository
           key: ${{ runner.os }}-repository-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-repository-
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -47,7 +49,7 @@ jobs:
 
       - name: Get esp-idf release name
         id: get-esp-idf-release
-        run: echo "tag_name=$(git -C $FIRMWARE_BASE/esp-idf describe --tags --abbrev=0)" >> $GITHUB_ENV
+        run: echo "tag_name=$(git -C $FIRMWARE_BASE/esp-idf rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Cache .espressif
         id: cache-espressif
@@ -100,18 +102,28 @@ jobs:
           exit 1
 
       - name: Build firmware
+        id: build-firmware
         run: |
           cd $FIRMWARE_BASE
           ./esp-idf/install.sh
           . export.sh
           ./switchconf.sh ${{ matrix.node }}
-          idf.py build
+          idf.py build 
+          FIRMWARE_PATH=$(find build_${{ matrix.node }}/ -maxdepth 1 -name '*.bin' -type f)
+          FIRMWARE_BASENAME=$(basename $FIRMWARE_PATH)
+          FIRMWARE_NAME=${FIRMWARE_BASENAME%.bin}
+          FIRMWARE_FOLDER=${FIRMWARE_PATH%$FIRMWARE_BASENAME}
+          NEW_FIRMWARE_LOCATION=${FIRMWARE_FOLDER}${FIRMWARE_NAME}_${{ matrix.node }}.bin
+          
+          mv $FIRMWARE_PATH $NEW_FIRMWARE_LOCATION
+          
+          echo "FIRMWARE_LOCATION=$NEW_FIRMWARE_LOCATION" >> $GITHUB_OUTPUT
 
       - name: Upload firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: firmware-${{ matrix.node }}
-          path: $FIRMWARE_BASE/build/*.bin
+          path: repository/${{ steps.build-firmware.outputs.FIRMWARE_LOCATION }}
 
   create-release:
     runs-on: ubuntu-latest
@@ -121,30 +133,20 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Download firmware binaries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: firmware-*
           path: ${{ github.workspace }}/firmware
+          pattern: firmware-*
+          merge-multiple: true
 
       - name: Create release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
+          files: ${{ github.workspace }}/firmware/*
           tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Firmware binaries for ${{ github.ref }}
           draft: true
           prerelease: false
-
-      - name: Upload firmware binaries
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/firmware/*.bin
-          asset_name: ${{ github.ref }}.bin
-          asset_content_type: application/octet-stream
